@@ -2,6 +2,9 @@
     margin: 0;
     padding: 0;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
     background-color: coral;
 }
 
@@ -85,7 +88,7 @@
 }
 
 #basket {
-    width: 262px;
+    min-width: 262px;
     min-height: 200px;
     border-radius: 5px;
     padding: 10px;
@@ -93,6 +96,22 @@
     top: 60px;
     right: 10px;
     display: none;
+}
+
+#basketSum {
+    max-width: 100%;
+    margin-top: 10px;
+    font-size: 1.5em;
+    padding: 5px;
+    min-height: 50px;
+    border: 2px solid #00BCD4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#basketSum .total, .sum {
+    margin: 0 5px;
 }
 
 .hidden {
@@ -105,7 +124,6 @@
     align-items: center;
     border: 2px solid #00BCD4;
     padding: 5px;
-    z-index: 1;
 }
 
 .basket__item:not(:first-child) {
@@ -124,4 +142,4 @@
 
 .basket__del {
     width: 20px;
-}
+} 

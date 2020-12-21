@@ -89,7 +89,7 @@ class GoodItems {
             </div>
         `;
     }
-}
+} 
 
 class Catalog {
     constructor() {
@@ -126,13 +126,13 @@ class Catalog {
 class Basket {
     constructor() {
         this.basketGoods = [];
-        // this.sum = 0;
+        this.sum = 0;
     }
 
     fetchGoodsInBasket() {
         this.basketGoods = [
-            {title: 'Shirt',   price: 100, quantity: 10},
-            {title: 'Shirt_1', price: 1000, quantity: 1},
+            {title: 'Shirt',   price: 100, quantity: 7},
+            {title: 'Shirt_1', price: 1000, quantity: 3},
         ];
     }
 
@@ -142,13 +142,13 @@ class Basket {
             const basketItem = new GoodItems(good.title, good.price, good.quantity);
             listHtml += basketItem.renderBasket();
         });
-        document.querySelector('#basket').innerHTML = listHtml;
+        document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
     }
 
-    // calcSum() {
-    //     this.sum = 0;
-    //     this.basketGoods.forEach(good => this.sum += good.quantity * good.price)
-    // }
+    calcSum() {
+        this.basketGoods.forEach(good => this.sum += good.quantity * good.price);
+        document.querySelector('.sum').innerText = this.sum;
+    }
 
     handleEvents() {
         const basket = document.querySelector('#basket');
@@ -166,6 +166,7 @@ const basket = new Basket();
 basket.fetchGoodsInBasket();
 basket.render();
 basket.handleEvents();
+basket.calcSum();
 
 
 
