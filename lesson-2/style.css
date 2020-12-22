@@ -143,3 +143,13 @@ body {
 .basket__del {
     width: 20px;
 } 
+
+.totalOfAllProducts {
+    width: 50%;
+    min-height: 50px;
+    border: 2px solid #00BCD4;
+    background-color:cornsilk;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
