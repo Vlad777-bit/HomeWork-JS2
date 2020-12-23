@@ -1,8 +1,15 @@
 'use strict';
-class GoodItems {
-    constructor(title, price) {
+class GoodsItem {
+    /**
+     * 
+     * @param {string} title - название товара
+     * @param {number} price - цена товара
+     * @param {number} quantity - кол-во 
+     */
+    constructor(title, price, quantity = 1) {
         this.title = title;
         this.price = price;
+        this.quantity = quantity;
     }
 
     /**
@@ -11,9 +18,10 @@ class GoodItems {
     renderCatalog() {
         return `
             <div class="item">
-                <img src="http://unsplash.it/150/150?random&gravity=center" alt="img">    
+                <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
                 <h3>${this.title}</h3>
-                <p>${this.price}</p>
+                <span>Quantity - ${this.quantity}</span>  
+                <p>Price - ${this.price}</p>
                 <button class="btn item__btn">Добавить</button>
             </div>
         `;
@@ -21,9 +29,14 @@ class GoodItems {
 }
 
 class Catalog {
-    constructor() {
-        this.goods = [];
-        this.sum = 0;
+    /**
+     * 
+     * @param {array} goods - массив товаров 
+     * @param {number} sum - сумма товаров
+     */
+    constructor(goods = [], sum = 0) {
+        this.goods = goods;
+        this.sum = sum;
     }
 
     /**
@@ -52,7 +65,7 @@ class Catalog {
     render() {
         let listHtml = '';
         this.goods.forEach(good => {
-            const goodItem = new GoodItems(good.title, good.price);
+            const goodItem = new GoodsItem(good.title, good.price, good.quantity);
             listHtml += goodItem.renderCatalog();
         });
         document.querySelector('#catalog').insertAdjacentHTML('afterbegin', listHtml);
@@ -63,16 +76,21 @@ class Catalog {
      * Закомментированный код определяет стоимость товаров * на их количество
      */
     calcSum() {
-        // this.goods.forEach(good => this.sum += good.price * good.quantity);
-        this.goods.forEach(good => this.sum += good.price);
+        this.goods.forEach(good => this.sum += good.price * good.quantity);
+        // this.goods.forEach(good => this.sum += good.price);
         document.querySelector('.totalOfAllProducts').insertAdjacentHTML('beforeend', this.sum);
     }
 }
 
-class GoodBasketItems extends GoodItems {
+class GoodBasketItems extends GoodsItem {
+    /**
+     * 
+     * @param {string} title - название товаров корзины
+     * @param {number} price - цена товаров корзины
+     * @param {number} quantity - кол-во товаров корзины
+     */
     constructor(title, price, quantity) {
-        super(title, price);
-        this.quantity = quantity;
+        super(title, price, quantity);
     }
 
     /**
@@ -82,7 +100,7 @@ class GoodBasketItems extends GoodItems {
         return  `
             <div class="basket__item">
                 <div class="basket__img">
-                    <img src="http://unsplash.it/150/150?random&gravity=center" alt="img">    
+                    <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
                 </div>
                 <div class="basket__info">
                     <h4>${this.title}</h4>
@@ -139,6 +157,20 @@ class Basket {
         const basketBtn = document.querySelector('#basketBtn');
         basketBtn.addEventListener('click', el => basket.classList.toggle('hidden'));
     }
+
+    /**
+     * Метод позволяет добавлять товар в корзину
+     */
+    add() {}
+
+    /**
+     * Метод позволяет удалить товар из корзины
+     */
+    remove() {}
+
+
+
+
 }
 
 const catalog = new Catalog();
