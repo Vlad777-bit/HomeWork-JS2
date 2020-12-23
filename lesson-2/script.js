@@ -1,9 +1,8 @@
 'use strict';
 class GoodItems {
-    constructor(title, price, quantity) {
+    constructor(title, price) {
         this.title = title;
         this.price = price;
-        this.quantity = quantity;
     }
 
     /**
@@ -19,25 +18,7 @@ class GoodItems {
             </div>
         `;
     }
-
-    /**
-     * Метод рендерит HTML разметку корзины
-     */
-    renderBasket() {
-        return  `
-            <div class="basket__item">
-                <div class="basket__img">
-                    <img src="http://unsplash.it/150/150?random&gravity=center" alt="img">    
-                </div>
-                <div class="basket__info">
-                    <h4>${this.title}</h4>
-                    <span class="price">${this.quantity} * ${this.price}</span>
-                </div>
-                <button class="btn basket__del">X</button>
-            </div>
-        `;
-    }
-} 
+}
 
 class Catalog {
     constructor() {
@@ -88,6 +69,31 @@ class Catalog {
     }
 }
 
+class GoodBasketItems extends GoodItems {
+    constructor(title, price, quantity) {
+        super(title, price);
+        this.quantity = quantity;
+    }
+
+    /**
+     * Метод рендерит HTML разметку корзины
+     */
+    renderBasket() {
+        return  `
+            <div class="basket__item">
+                <div class="basket__img">
+                    <img src="http://unsplash.it/150/150?random&gravity=center" alt="img">    
+                </div>
+                <div class="basket__info">
+                    <h4>${this.title}</h4>
+                    <span class="price">${this.quantity} * ${this.price}</span>
+                </div>
+                <button class="btn basket__del">X</button>
+            </div>
+        `;
+    }
+}
+
 class Basket {
     constructor() {
         this.basketGoods = [];
@@ -110,7 +116,7 @@ class Basket {
     render() {
         let listHtml = '';
         this.basketGoods.forEach(good => {
-            const basketItem = new GoodItems(good.title, good.price, good.quantity);
+            const basketItem = new GoodBasketItems(good.title, good.price, good.quantity);
             listHtml += basketItem.renderBasket();
         });
         document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
