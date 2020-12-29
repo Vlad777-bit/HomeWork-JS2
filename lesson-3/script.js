@@ -1,15 +1,5 @@
 'use strict';
-
-function makeGETRequest(url, callback) {
-    return new Promise((resolve, reject) => {
-        let xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new window.ActiveXObject;
-        xhr.open("GET", url, true);
-        xhr.onload = () => resolve(callback(xhr.responseText));
-        xhr.onerror = () => reject(xhr.statusText);
-        xhr.send();
-      });
-}
-
+  
 class GoodsItem {
     /**
      * 
@@ -39,46 +29,44 @@ class GoodsItem {
     }
 }
 
+
 class Catalog {
     /**
      * 
      * @param {array} goods - массив товаров 
-     * @param {number} amount - сумма товаров
      */
-    constructor(goods = [], amount = 0, id) {
+    constructor(goods = []) {
         this.goods = goods;
-        this.amount = amount;
-        this.id = id;
+        this.url = 'https:raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/catalogData.json';
     }
 
     /**
-     * Метод инициализирует товары
+     * Метод async getGoods:
+     * Принимает url с псевдосервера
+     * Переделывает его из json формата в object
+     * Распределяет товары для класса GoodsItem
+     * Рендерит HTML разметку каталога
+     * Записывает разметку в #catalog
      */
-    fetchGoods(cb) {
-        makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
-            this.goods = JSON.parse(goods);
-            cb();
-        })
-    }
+    async getGoods() {
+        const res = await fetch(this.url)
+        const data = await res.json()
+        const getGoods = await data.map(item => new GoodsItem(item.product_name, item.price))
+        const catalogList = getGoods.map(item => item.renderCatalog()).join('')
+        document.querySelector('#catalog').insertAdjacentHTML('afterbegin', catalogList)
 
-    /**
-     * Метод рендерит товары из метода fetchGoods в уже созданную HTML разметку 
-     */
-    render() {
-        let listHtml = '';
-        this.goods.forEach(good => {
-            const goodsItem = new GoodsItem(good.product_name, good.price, good.quantity);
-            listHtml += goodsItem.renderCatalog();
-        });
-        document.querySelector('#catalog').insertAdjacentHTML('afterbegin', listHtml);
-    }
+        //=============================================================================================================//
 
-    /**
-     * Метод, определяющий суммарную стоимость всех товаров
-     */
-    calcSum() {
-        this.goods.forEach(good => this.amount += good.price * good.quantity);
-        document.querySelector('.totalOfAllProducts').insertAdjacentHTML('beforeend', this.amount);
+        // fetch(
+        //     'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/catalogData.json',
+        // )
+        // .then(res => res.json())
+        // .then(res => { 
+        //     this.goods = res.map(item => new GoodsItem(item.product_name, item.price));
+        // }).then(() => {
+        //     let catalogList = this.goods.map(item => item.renderCatalog()).join('')
+        //     document.querySelector('#catalog').insertAdjacentHTML('afterbegin', catalogList)
+        // })     
     }
 }
 
@@ -97,14 +85,14 @@ class GoodsBasketItems extends GoodsItem {
      * Метод рендерит HTML разметку корзины
      */
     renderBasket() {
-        return `
+        return  `
             <div class="basket__item">
                 <div class="basket__img">
                     <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
                 </div>
                 <div class="basket__info">
                     <h4>${this.product_name}</h4>
-                    <span class="amount">${this.quantity} * ${this.price}</span>
+                    <span class="price">${this.quantity} * ${this.price}</span>
                 </div>
                 <button class="btn basket__del">X</button>
             </div>
@@ -112,40 +100,31 @@ class GoodsBasketItems extends GoodsItem {
     }
 }
 
-class Basket {
-    constructor(basketGoods = [], amount = 0) {
-        this.basketGoods = basketGoods;
+class Basket extends Catalog {
+    constructor(goods = [], amount = 0) {
+        super(goods)
         this.amount = amount;
+        this.url = 'https:raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/getBasket.json'
     }
 
     /**
-     * Метод инициализирует начальные товары в корзине
+     * Метод async getGoods:
+     * Принимает url с псевдосервера
+     * Переделывает его из json формата в object
+     * Записывает общую сумму товаров
+     * Распределяет товары для класса GoodsBasketItems
+     * Рендерит HTML разметку каталога
+     * Записывает разметку в #catalog
      */
-    fetchGoodsInBasket(cb) {
-        makeGETRequest(`${API_URL}/getBasket.json`, (basketGoods) => {
-            this.basketGoods = JSON.parse(basketGoods);
-            cb();
-        })
-    }
 
-    /**
-     * Метод рендерит товары из метода fetchGoodsInBasket в уже созданную HTML разметку корзины
-     */
-    render() {
-        let listHtml = '';
-        this.basketGoods.forEach(good => {
-            const basketItem = new GoodsBasketItems(good.product_name, good.price, good.quantity);
-            listHtml += basketItem.renderBasket();
-        });
-        document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
-    }
-
-    /**
-     * Метод, определяющий суммарную стоимость всех товаров находящихся в корзине
-     */
-    calcSum() {
-        this.basketGoods.forEach(good => this.amount += good.quantity * good.price);
-        document.querySelector('.amount').innerText = this.amount;
+    async getGoods() {
+        const res = await fetch(this.url)
+        const data = await res.json()
+        const getAmmount = await data.amount
+        const getGoods = await data.contents.map(item => new GoodsBasketItems(item.product_name, item.price))
+        const basketList = getGoods.map(item => item.renderBasket()).join('')
+        document.querySelector('#basket').insertAdjacentHTML('afterbegin', basketList)
+        document.querySelector('.amount').innerText = getAmmount;
     }
 
     /**
@@ -169,17 +148,15 @@ class Basket {
     remove() {}
 }
 
-
-
-const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
-
 const catalog = new Catalog();
-catalog.fetchGoods(() => catalog.render());
-catalog.calcSum();
+catalog.getGoods(); 
+
 
 const basket = new Basket();
-basket.fetchGoodsInBasket(() => basket.render());
-// basket.fetchGoodsInBasket();
-// basket.render();
+basket.getGoods();
 basket.handleEvents();
-basket.calcSum();
+
+
+
+
+
