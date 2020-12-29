@@ -43,11 +43,12 @@ class Catalog {
     /**
      * 
      * @param {array} goods - массив товаров 
-     * @param {number} sum - сумма товаров
+     * @param {number} amount - сумма товаров
      */
-    constructor(goods = [], sum = 0) {
+    constructor(goods = [], amount = 0, id) {
         this.goods = goods;
-        this.sum = sum;
+        this.amount = amount;
+        this.id = id;
     }
 
     /**
@@ -66,109 +67,107 @@ class Catalog {
     render() {
         let listHtml = '';
         this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.product_name, good.price, good.quantity);
-            listHtml += goodItem.renderCatalog();
+            const goodsItem = new GoodsItem(good.product_name, good.price, good.quantity);
+            listHtml += goodsItem.renderCatalog();
         });
         document.querySelector('#catalog').insertAdjacentHTML('afterbegin', listHtml);
     }
 
     /**
      * Метод, определяющий суммарную стоимость всех товаров
-     * Закомментированный код определяет стоимость товаров * на их количество
      */
-    // calcSum() {
-    //     this.goods.forEach(good => this.sum += good.price * good.quantity);
-    //     // this.goods.forEach(good => this.sum += good.price);
-    //     document.querySelector('.totalOfAllProducts').insertAdjacentHTML('beforeend', this.sum);
-    // }
+    calcSum() {
+        this.goods.forEach(good => this.amount += good.price * good.quantity);
+        document.querySelector('.totalOfAllProducts').insertAdjacentHTML('beforeend', this.amount);
+    }
 }
 
-// class GoodsBasketItems extends GoodsItem {
-//     /**
-//      * 
-//      * @param {string} product_name - название товаров корзины
-//      * @param {number} price - цена товаров корзины
-//      * @param {number} quantity - кол-во товаров корзины
-//      */
-//     constructor(product_name, price, quantity) {
-//         super(product_name, price, quantity);
-//     }
+class GoodsBasketItems extends GoodsItem {
+    /**
+     * 
+     * @param {string} product_name - название товаров корзины
+     * @param {number} price - цена товаров корзины
+     * @param {number} quantity - кол-во товаров корзины
+     */
+    constructor(product_name, price, quantity) {
+        super(product_name, price, quantity);
+    }
 
-//     /**
-//      * Метод рендерит HTML разметку корзины
-//      */
-//     renderBasket() {
-//         return `
-//             <div class="basket__item">
-//                 <div class="basket__img">
-//                     <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
-//                 </div>
-//                 <div class="basket__info">
-//                     <h4>${this.product_name}</h4>
-//                     <span class="amount">${this.quantity} * ${this.price}</span>
-//                 </div>
-//                 <button class="btn basket__del">X</button>
-//             </div>
-//         `;
-//     }
-// }
+    /**
+     * Метод рендерит HTML разметку корзины
+     */
+    renderBasket() {
+        return `
+            <div class="basket__item">
+                <div class="basket__img">
+                    <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
+                </div>
+                <div class="basket__info">
+                    <h4>${this.product_name}</h4>
+                    <span class="amount">${this.quantity} * ${this.price}</span>
+                </div>
+                <button class="btn basket__del">X</button>
+            </div>
+        `;
+    }
+}
 
-// class Basket {
-//     constructor(basketGoods = [], amount = 0) {
-//         this.basketGoods = basketGoods;
-//         this.amount = amount;
-//     }
+class Basket {
+    constructor(basketGoods = [], amount = 0) {
+        this.basketGoods = basketGoods;
+        this.amount = amount;
+    }
 
-//     /**
-//      * Метод инициализирует начальные товары в корзине
-//      */
-//     fetchGoodsInBasket(cb) {
-//         makeGETRequest(`${API_URL}/getBasket.json`, (basketGoods) => {
-//             this.basketGoods = JSON.parse(basketGoods);
-//             cb();
-//         })
-//     }
+    /**
+     * Метод инициализирует начальные товары в корзине
+     */
+    fetchGoodsInBasket(cb) {
+        makeGETRequest(`${API_URL}/getBasket.json`, (basketGoods) => {
+            this.basketGoods = JSON.parse(basketGoods);
+            cb();
+        })
+    }
 
-//     /**
-//      * Метод рендерит товары из метода fetchGoodsInBasket в уже созданную HTML разметку корзины
-//      */
-//     render() {
-//         let listHtml = '';
-//         this.basketGoods.forEach(good => {
-//             const basketItem = new GoodsBasketItems(good.product_name, good.price, good.quantity);
-//             listHtml += basketItem.renderBasket();
-//         });
-//         document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
-//     }
+    /**
+     * Метод рендерит товары из метода fetchGoodsInBasket в уже созданную HTML разметку корзины
+     */
+    render() {
+        let listHtml = '';
+        this.basketGoods.forEach(good => {
+            const basketItem = new GoodsBasketItems(good.product_name, good.price, good.quantity);
+            listHtml += basketItem.renderBasket();
+        });
+        document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
+    }
 
-//     /**
-//      * Метод, определяющий суммарную стоимость всех товаров находящихся в корзине
-//      */
-//     // calcSum() {
-//     //     this.basketGoods.forEach(good => this.amount += good.quantity * good.price);
-//     //     document.querySelector('.amount').innerText = this.amount;
-//     // }
+    /**
+     * Метод, определяющий суммарную стоимость всех товаров находящихся в корзине
+     */
+    calcSum() {
+        this.basketGoods.forEach(good => this.amount += good.quantity * good.price);
+        document.querySelector('.amount').innerText = this.amount;
+    }
 
-//     /**
-//      * Метод позволяет при клике открывать корзину
-//      */
-//     handleEvents() {
-//         const basket = document.querySelector('#basket');
+    /**
+     * Метод позволяет при клике открывать корзину
+     */
+    handleEvents() {
+        const basket = document.querySelector('#basket');
 
-//         const basketBtn = document.querySelector('#basketBtn');
-//         basketBtn.addEventListener('click', el => basket.classList.toggle('hidden'));
-//     }
+        const basketBtn = document.querySelector('#basketBtn');
+        basketBtn.addEventListener('click', el => basket.classList.toggle('hidden'));
+    }
 
-//     /**
-//      * Метод позволяет добавлять товар в корзину
-//      */
-//     add() {}
+    /**
+     * Метод позволяет добавлять товар в корзину
+     */
+    add() {}
 
-//     /**
-//      * Метод позволяет удалить товар из корзины
-//      */
-//     remove() {}
-// }
+    /**
+     * Метод позволяет удалить товар из корзины
+     */
+    remove() {}
+}
 
 
 
@@ -176,11 +175,11 @@ const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-sto
 
 const catalog = new Catalog();
 catalog.fetchGoods(() => catalog.render());
-// catalog.calcSum();
+catalog.calcSum();
 
-// const basket = new Basket();
-// basket.fetchGoodsInBasket(() => basket.render());
-// // basket.fetchGoodsInBasket();
-// // basket.render();
-// basket.handleEvents();
-// // basket.calcSum();
+const basket = new Basket();
+basket.fetchGoodsInBasket(() => basket.render());
+// basket.fetchGoodsInBasket();
+// basket.render();
+basket.handleEvents();
+basket.calcSum();
