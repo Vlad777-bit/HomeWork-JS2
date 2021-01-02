@@ -49,11 +49,16 @@ class Catalog {
      * Записывает разметку в #catalog
      */
     async getGoods() {
-        const res = await fetch(this.url)
-        const data = await res.json()
-        const getGoods = await data.map(item => new GoodsItem(item.product_name, item.price))
-        const catalogList = getGoods.map(item => item.renderCatalog()).join('')
-        document.querySelector('#catalog').insertAdjacentHTML('afterbegin', catalogList)
+        try {
+            const res = await fetch(this.url)
+            const data = await res.json()
+            const getGoods = await data.map(item => new GoodsItem(item.product_name, item.price))
+            const catalogList = getGoods.map(item => item.renderCatalog()).join('')
+            document.querySelector('#catalog').insertAdjacentHTML('afterbegin', catalogList)
+        } catch (e) {
+            console.error('Произошла ошибка в каталоге', e)
+        }
+        
 
         //=============================================================================================================//
 
@@ -118,13 +123,17 @@ class Basket extends Catalog {
      */
 
     async getGoods() {
-        const res = await fetch(this.url)
-        const data = await res.json()
-        const getAmmount = await data.amount
-        const getGoods = await data.contents.map(item => new GoodsBasketItems(item.product_name, item.price))
-        const basketList = getGoods.map(item => item.renderBasket()).join('')
-        document.querySelector('#basket').insertAdjacentHTML('afterbegin', basketList)
-        document.querySelector('.amount').innerText = getAmmount;
+        try {
+            const res = await fetch(this.url)
+            const data = await res.json()
+            const getAmmount = await data.amount
+            const getGoods = await data.contents.map(item => new GoodsBasketItems(item.product_name, item.price))
+            const basketList = getGoods.map(item => item.renderBasket()).join('')
+            document.querySelector('#basket').insertAdjacentHTML('afterbegin', basketList)
+            document.querySelector('.amount').innerText = getAmmount;
+        } catch (e) {
+            console.error('Произошла ошибка в корзине', e)
+        }
     }
 
     /**
