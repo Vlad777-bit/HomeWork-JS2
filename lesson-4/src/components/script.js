@@ -1,6 +1,16 @@
 'use strict';
-  
-class GoodsItem { 
+
+function makeGETRequest(url, callback) {
+    return new Promise((resolve, reject) => {
+        let xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new window.ActiveXObject;
+        xhr.open("GET", url, true);
+        xhr.onload = () => resolve(callback(xhr.responseText));
+        xhr.onerror = () => reject(xhr.statusText);
+        xhr.send();
+      });
+}
+
+class GoodsItem {
     /**
      * 
      * @param {number} id_product - id товара
@@ -40,58 +50,46 @@ class Catalog {
      */
     constructor(goods = []) {
         this.goods = goods;
-        this.url = 'https:raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/catalogData.json';
+        this.filteredGoods = [];
+        this.url = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
     }
-
-    /**
-     * Метод инициализирует все методы класса
-     */
+    
     init() {
-        this.getGoods();
-        this.handleEvents();
+        this.fetchGoods(() => this.render())
+        this.filterGoods()
     }
 
-    /**
-     * Метод async getGoods:
-     * Принимает url с псевдосервера
-     * Переделывает его из json формата в object
-     * Распределяет товары для класса GoodsItem
-     * Рендерит HTML разметку каталога
-     * Записывает разметку в #catalog
-     */
-    async getGoods() {
-        try {
-            const res = await fetch(this.url)
-            const data = await res.json()
-            const getGoods = await data.map(item => new GoodsItem(item.id_product, item.product_name, item.price))
-            const catalogList = getGoods.map(item => item.renderCatalog()).join('')
-            document.querySelector('#catalog').insertAdjacentHTML('afterbegin', catalogList)
-        } catch (e) {
-            console.error('Произошла ошибка в каталоге', e)
-        }
-        
-
-        //=============================================================================================================//
-
-        // fetch(
-        //     'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/catalogData.json',
-        // )
-        // .then(res => res.json())
-        // .then(res => { 
-        //     this.goods = res.map(item => new GoodsItem(item.product_name, item.price));
-        // }).then(() => {
-        //     let catalogList = this.goods.map(item => item.renderCatalog()).join('')
-        //     document.querySelector('#catalog').insertAdjacentHTML('afterbegin', catalogList)
-        // })     
+    fetchGoods(cb) {
+        makeGETRequest(`${this.url}/catalogData.json`, (goods) => {
+          this.goods = JSON.parse(goods);
+          this.filteredGoods = JSON.parse(goods);
+          cb();
+        })
+    }
+    
+    render() {
+        let listHtml = '';
+        this.filteredGoods.forEach((good) => {
+            const catalogList = new GoodsItem(good.id_product, good.product_name, good.price);
+            listHtml += catalogList.renderCatalog();
+        })
+        document.querySelector('#catalog').innerHTML = listHtml;
     }
 
-    /**
-     * Метод позволяет при клике открывать корзину
-     */
-    handleEvents() {
-        const container = document.querySelector('#catalog');
-        const addTo = document.querySelector('.item__btn');
-      
+    filterGoods(value)  {
+        const regexp = new RegExp(value, 'i');
+        this.filteredGoods = this.goods.filter(item => regexp.test(item.product_name));
+        this.render();
+
+        let searchButton = document.querySelector('.search_btn');
+        let searchInput = document.querySelector('.search');
+
+        searchButton.addEventListener('click', (e) => {
+            let value = searchInput.value;
+            // console.log(value)
+            catalog.filterGoods(value);
+        });
+          
     }
 }
 
@@ -114,7 +112,7 @@ class BasketItems {
      * Метод рендерит HTML разметку корзины
      */
     renderBasket() {
-        return  `
+        return `
             <div class="basket__item">
                 <div class="basket__img">
                     <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
@@ -137,39 +135,32 @@ class Basket {
     constructor(goods = [], amount = 0) {
         this.goods = goods;
         this.amount = amount;
-        this.url = 'https:raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/getBasket.json'
+        this.url = 'https:raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
     }
 
     /**
      * Метод инициализирует все методы класса
      */
     init() {
-        this.getGoods();
-        this.handleEvents();
+        this.fetchGoods(() => this.render())
+        this.handleEvents()
     }
 
-    /**
-     * Метод async getGoods:
-     * Принимает url с псевдосервера
-     * Переделывает его из json формата в object
-     * Записывает общую сумму товаров
-     * Распределяет товары для класса BasketItems
-     * Рендерит HTML разметку каталога
-     * Записывает разметку в #catalog
-     */
+    fetchGoods(cb) {
+        makeGETRequest(`${this.url}/getBasket.json`, (goods) => {
+            this.goods = JSON.parse(goods);
+            cb();
+            
+        })
+    }
 
-    async getGoods() {
-        try {
-            const res = await fetch(this.url)
-            const data = await res.json()
-            const getAmmount = await data.amount
-            const getGoods = await data.contents.map(item => new BasketItems(item.id_product, item.product_name, item.price, item.quantity))
-            const basketList = getGoods.map(item => item.renderBasket()).join('')
-            document.querySelector('#basket').insertAdjacentHTML('afterbegin', basketList)
-            document.querySelector('.amount').innerText = getAmmount;
-        } catch (e) {
-            console.error('Произошла ошибка в корзине', e)
-        }
+    render() {
+        let listHtml = '';
+        this.goods.contents.forEach((good) => {
+            const basketList = new BasketItems(good.id_product, good.product_name, good.price, good.quantity);
+            listHtml += basketList.renderBasket();
+        })
+        document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
     }
 
     /**
@@ -193,14 +184,10 @@ class Basket {
     remove() {}
 }
 
+
 const catalog = new Catalog();
-catalog.init(); 
+catalog.init();
 
 
 const basket = new Basket();
 basket.init();
-
-
-
-
-
