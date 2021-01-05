@@ -1,5 +1,28 @@
 'use strict';
 
+new Content = {
+    data {
+
+    }
+}
+
+Vue.createApp(Content).mount('#content')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function makeGETRequest(url, callback) {
     return new Promise((resolve, reject) => {
         let xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new window.ActiveXObject;
