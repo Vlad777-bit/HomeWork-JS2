@@ -38,9 +38,9 @@
 
 			<div id="catalog">
 				<div class="item" v-for="item in catalogItems" :key="item.id_product">
-					<img src="http://unsplash.it/180/150?random&gravity=center" alt="item.product_name">
+					<img src="http://unsplash.it/180/150?random&gravity=center" alt="item.product_name"> 
 					<h3>{{ item.product_name }}</h3>
-					<p>{{ item.price }}</p>
+					<p>{{ item.price }} руб.</p>
 					<button class="btn item__btn" data-id="" name="add(item)" @click="add(item)">Добавить</button>
 				</div>
 			</div>

@@ -6,8 +6,8 @@ let app = new Vue({
         basketItems: [],
         basketAmount: '',
         showBasket: false,
-        catalogUrl: 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/catalogData.json',
-        basketUrl: 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/getBasket.json'
+        catalogUrl: 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON/catalog.json',
+        basketUrl: 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON/basket.json'
     },
 
     methods: {
