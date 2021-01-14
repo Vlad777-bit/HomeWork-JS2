@@ -10,16 +10,16 @@
 
 <body>
 
-	<div id="app">
-		<header class="header">
-			<div class="form">
-				<input type="text" class="search" placeholder="Что искать?">
-				<input type="submit" class="btn search_btn" value="Поиск">
-			</div>
-			<button id="basketBtn" class="btn" @click="showBasket = !showBasket">Корзина</button>
-		</header>
-		<div class="container">
-			<div id="basket" v-show="showBasket">
+	<!-- <div id="app"> -->
+		<!-- <header class="header"> -->
+			<!-- <label name="search" class="form">
+				<input type="text" name="search" class="search" placeholder="Что искать?">
+				<input type="submit" name="search" class="btn search_btn" value="Поиск">
+			</label> -->
+			<!-- <button id="basketBtn" class="btn" @click="showBasket = !showBasket">Корзина</button> -->
+		<!-- </header> -->
+		<!-- <div class="container"> -->
+			<!-- <div id="basket" v-show="showBasket">
 				<div class="basket__item" v-for="item in basketItems" :key="item.id_product">
 					<div class="basket__img">
 						<img src="http://unsplash.it/180/150?random&gravity=center" alt="item.product_name">
@@ -34,17 +34,23 @@
 					<span class="total">Total</span>
 					<span class="amount">{{ basketAmount }}</span>
 				</div>
-			</div>
+			</div> -->
 
-			<div id="catalog">
+			<!-- <div id="catalog">
 				<div class="item" v-for="item in catalogItems" :key="item.id_product">
 					<img src="http://unsplash.it/180/150?random&gravity=center" alt="item.product_name"> 
 					<h3>{{ item.product_name }}</h3>
 					<p>{{ item.price }} руб.</p>
 					<button class="btn item__btn" data-id="" name="add(item)" @click="add(item)">Добавить</button>
 				</div>
-			</div>
-		</div>
+			</div> -->
+
+		<!-- </div> -->
+	<!-- </div> -->
+
+	<div id="app">
+		<search v-on:search="filteredGoods"></search>
+		<catalog :filter="search"></catalog>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
