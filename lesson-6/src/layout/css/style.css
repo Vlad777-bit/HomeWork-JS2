@@ -39,13 +39,21 @@ body {
     font-size: 1em;
 }
 
+.search_btn {
+    width: 30px;
+    background: none;
+    border: none;
+    position: absolute;
+    left: 11%;
+
+}
+
 .btn {
     background-color: white;
     border-radius: 10px;
     width: 90px;
     height: 20px;
     border: 1px solid #00BCD4;
-    ;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -64,7 +72,7 @@ body {
     padding: 7px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: flex-start;
     border: 2px solid #00BCD4;
     overflow: hidden;
@@ -120,6 +128,12 @@ span {
     position: fixed;
     top: 60px;
     right: 10px;
+}
+
+#basketBtn {
+    position: fixed;
+    top: 17px;
+    right: 30px;
 }
 
 #basketSum {
