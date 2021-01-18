@@ -81,15 +81,13 @@ class Catalog extends List {
             })
 
         const regexp = new RegExp(value, 'i');
-        let filtredItem = this.filItems.filter(item => regexp.test(item.product_name)).map(item => new connect[this.constructor.name](item).render())
-        document.querySelector(this.container).innerHTML = filtredItem.join('')
-            
-
-        let searchButton = document.querySelector('.search_btn');
-        let searchInput = document.querySelector('.search');
+        let filtredItem = this.filItems.filter(item => regexp.test(item.product_name))
+        
+        let renderFiltredItem = filtredItem.map(item => new connect[this.constructor.name](item).render())
+        document.querySelector(this.container).innerHTML = renderFiltredItem.join('')
     
-        searchButton.addEventListener('click', (e) => {
-            let value = searchInput.value;
+        document.querySelector('.search_btn').addEventListener('click', (e) => {
+            let value = document.querySelector('.search').value;
             this.filterGoods(value);
         });
     }
