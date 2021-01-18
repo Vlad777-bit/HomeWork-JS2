@@ -64,7 +64,7 @@ body {
     padding: 7px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: flex-start;
     border: 2px solid #00BCD4;
     overflow: hidden;

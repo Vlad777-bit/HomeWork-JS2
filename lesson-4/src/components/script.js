@@ -1,193 +1,184 @@
 'use strict';
 
-function makeGETRequest(url, callback) {
-    return new Promise((resolve, reject) => {
-        let xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new window.ActiveXObject;
-        xhr.open("GET", url, true);
-        xhr.onload = () => resolve(callback(xhr.responseText));
-        xhr.onerror = () => reject(xhr.statusText);
-        xhr.send();
-      });
-}
-
-class GoodsItem {
-    /**
-     * 
-     * @param {number} id_product - id товара
-     * @param {string} product_name - название товара
-     * @param {number} price - цена товара
-     */
-    constructor(id_product, product_name, price) {
-        this.id_product = id_product;
-        this.product_name = product_name;
-        this.price = price;
+class List {
+    constructor(url, container, basket) {
+        this.url = 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON' + url;
+        this.container = container;
+        this.items = [];
+        this._init(basket);
     }
 
-    /**
-     * Метод рендерит HTML разметку каталога товаров
-     */
-    renderCatalog() {
-        return `
-            <div class="item">
-                <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
-                <h3>${this.product_name}</h3>
-                <p>Price - ${this.price}</p>
-                <button 
-                    class="btn item__btn"
-                    data-id="${this.id_product}"
-                    name="addToBasket"
-                >Добавить</button>
-            </div>
-        `;
+    _init(basket = false) {
+        this._get(this.url)
+            .then(data => {
+                this.items = !basket ? data : data.contents;
+                this._render();
+                this._handleEvents();
+                this.filItems = data
+
+            })
+    }
+
+    _get(url) {
+        return fetch(url).then(data => data.json());
+    }
+
+    _render() {
+        let htmlStr = this.items.map(item => new connect[this.constructor.name](item).render())
+        document.querySelector(this.container).innerHTML = htmlStr.join('')
+    }
+
+    _handleEvents() {
+        return ''
     }
 }
 
-
-class Catalog {
-    /**
-     * 
-     * @param {array} goods - массив товаров 
-     */
-    constructor(goods = []) {
-        this.goods = goods;
-        this.filteredGoods = [];
-        this.url = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
-    }
-    
-    init() {
-        this.fetchGoods(() => this.render())
-        this.filterGoods()
+class Item {
+    constructor(item) {
+        this.item = item;   
     }
 
-    fetchGoods(cb) {
-        makeGETRequest(`${this.url}/catalogData.json`, (goods) => {
-          this.goods = JSON.parse(goods);
-          this.filteredGoods = JSON.parse(goods);
-          cb();
-        })
-    }
-    
     render() {
-        let listHtml = '';
-        this.filteredGoods.forEach((good) => {
-            const catalogList = new GoodsItem(good.id_product, good.product_name, good.price);
-            listHtml += catalogList.renderCatalog();
-        })
-        document.querySelector('#catalog').innerHTML = listHtml;
+        return `
+        <div class="item">
+            <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
+            <h3>${this.item.product_name}</h3>
+            <p>Price - ${this.item.price}</p>
+            <button 
+                class="btn item__btn"
+                name="buy"
+                data-id="${this.item.id_product}"
+                data-name="${this.item.product_name}"
+                data-price="${this.item.price}"
+            >Добавить</button>
+        </div>
+        `
+    }
+}
+
+class Catalog extends List {
+    constructor(basket, url = '/catalog.json', container = '#catalog', filItems = []) {
+        super(url, container);
+        this.basket = basket;
+        this.filItems = filItems
+        this.filterGoods();
     }
 
-    filterGoods(value)  {
+    _handleEvents() {
+        document.querySelector(this.container).addEventListener('click', evt => {
+            if (evt.target.name == 'buy') {
+                this.basket.add(evt.target.dataset);
+            }
+        })
+    }
+
+    // отсюда
+
+    filterGoods(value) {
+        this._get(this.url)
+            .then(data => {
+                this.filItems = data
+            })
+
         const regexp = new RegExp(value, 'i');
-        this.filteredGoods = this.goods.filter(item => regexp.test(item.product_name));
-        this.render();
+        let filtredItem = this.filItems.filter(item => regexp.test(item.product_name)).map(item => new connect[this.constructor.name](item).render())
+        document.querySelector(this.container).innerHTML = filtredItem.join('')
+            
 
         let searchButton = document.querySelector('.search_btn');
         let searchInput = document.querySelector('.search');
-
+    
         searchButton.addEventListener('click', (e) => {
             let value = searchInput.value;
-            // console.log(value)
-            catalog.filterGoods(value);
+            this.filterGoods(value);
         });
-          
+    }
+
+    // досюда
+}
+
+
+
+class Basket extends List {
+    constructor(url = '/basket.json', container = '#basket', basket = true) {
+        super(url, container, basket);
+    }
+
+    _handleEvents() {
+        document.querySelector(this.container).addEventListener('click', evt => {
+            if (evt.target.name == 'remove') {
+                this.remove(evt.target.dataset.id)
+            }
+        })
+
+        document.querySelector('#basketBtn').addEventListener('click', () => {
+            document.querySelector('#basket').classList.toggle('hidden')
+        })
+    }
+
+    add(item) {
+        let find = this.items.find(el => el.id_product == item.id);
+        if (find) {
+            find.quantity++;
+            this._render();
+        } else {
+            let newItem = {
+                    id_product: item.id,
+                    product_name: item.name,
+                    price: +item.price,
+                    quantity: 1 
+                };
+            this.items.push(newItem);
+            this._render();
+        }
+    }
+
+    remove(itemId) {
+        let find = this.items.find(el => el.id_product == itemId);
+        if (find.quantity > 1) {
+            find.quantity--;
+        } else {
+            this.items.splice(this.items.indexOf(find), 1)
+        }
+        this._render();
     }
 }
 
-class BasketItems {
-    /**
-     * 
-     * @param {string} id_product - id товаров корзины
-     * @param {string} product_name - название товаров корзины
-     * @param {number} price - цена товаров корзины
-     * @param {number} quantity - кол-во товаров корзины
-     */
-    constructor(id_product, product_name, price, quantity) {
-        this.id_product = id_product;
-        this.product_name = product_name;
-        this.price = price;
-        this.quantity = quantity;
+class CatalogItem extends Item {}
+
+class BasketItem extends Item {
+    constructor(item) {
+        super(item)
     }
 
-    /**
-     * Метод рендерит HTML разметку корзины
-     */
-    renderBasket() {
+    render() {
         return `
             <div class="basket__item">
                 <div class="basket__img">
                     <img src="http://unsplash.it/180/150?random&gravity=center" alt="img">    
                 </div>
                 <div class="basket__info">
-                    <h4>${this.product_name}</h4>
-                    <span class="price">${this.quantity} * ${this.price}</span>
+                    <h4>${this.item.product_name}</h4>
+                    <span class="price">${this.item.quantity} * ${this.item.price}</span>
                 </div>
                 <button 
                     class="btn basket__del"
-                    data-id="${this.id_product}"
+                    data-id="${this.item.id_product}"
                     name="remove"
-                >X</button>
+                >&times;</button>
             </div>
         `;
     }
 }
 
-class Basket {
-    constructor(goods = [], amount = 0) {
-        this.goods = goods;
-        this.amount = amount;
-        this.url = 'https:raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
-    }
-
-    /**
-     * Метод инициализирует все методы класса
-     */
-    init() {
-        this.fetchGoods(() => this.render())
-        this.handleEvents()
-    }
-
-    fetchGoods(cb) {
-        makeGETRequest(`${this.url}/getBasket.json`, (goods) => {
-            this.goods = JSON.parse(goods);
-            cb();
-            
-        })
-    }
-
-    render() {
-        let listHtml = '';
-        this.goods.contents.forEach((good) => {
-            const basketList = new BasketItems(good.id_product, good.product_name, good.price, good.quantity);
-            listHtml += basketList.renderBasket();
-        })
-        document.querySelector('#basket').insertAdjacentHTML('afterbegin', listHtml);
-    }
-
-    /**
-     * Метод позволяет при клике открывать корзину
-     */
-    handleEvents() {
-        const basket = document.querySelector('#basket');
-
-        const basketBtn = document.querySelector('#basketBtn');
-        basketBtn.addEventListener('click', el => basket.classList.toggle('hidden'));
-    }
-
-    /**
-     * Метод позволяет добавлять товар в корзину
-     */
-    add() {}
-
-    /**
-     * Метод позволяет удалить товар из корзины
-     */
-    remove() {}
+let connect = {
+    'Catalog': CatalogItem,
+    'Basket': BasketItem
 }
 
+let basket = new Basket();
+let catalog = new Catalog(basket);
 
-const catalog = new Catalog();
-catalog.init();
 
 
-const basket = new Basket();
-basket.init();
+
