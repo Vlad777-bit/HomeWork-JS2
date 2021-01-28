@@ -48,7 +48,7 @@ Vue.component('catalog', {
     data() {
         return {
             catalogItems: [],
-            catalogUrl: 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON/catalog.json',
+            catalogUrl: '/goods',
         } 
     },
     props: ['filter'],
@@ -57,18 +57,9 @@ Vue.component('catalog', {
             return this.filter ? [...this.catalogItems.filter(({ product_name }) => product_name.includes(this.filter))] : [...this.catalogItems];  
         }
     },
-    methods: {
-        get(url) {
-            return fetch(url).then(data => data.json());
-        },
-    },
-    async mounted() {
-        try {
-            this.catalogItems = await this.get(this.catalogUrl);
-        }
-        catch (e) {
-            throw('Произошла ошибка в Catalog - ' +  e);
-        }
+    methods: {},
+    mounted() {
+        fetch('/goods').then(res => res.json()).then(res => this.catalogItems = [...res])
     }
 })
 
