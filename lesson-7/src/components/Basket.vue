@@ -25,7 +25,8 @@ export default {
     data() {
         return {
             items: [],
-            url: 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON/basket.json',
+            url: '/api/basket',
+            // url: 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON/basket.json',
             isShow: false
         }
     },
