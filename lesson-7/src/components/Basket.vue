@@ -7,7 +7,9 @@
             Корзина
         </button>
         <div class="basket" v-show="isShow">
+        <p class="center" v-if="this.items.length == 0">Корзина пуста</p>    
             <item  
+                v-else
                 v-for="item in items" 
                 :key="item.id_product"
                 itemType="basket"
@@ -26,27 +28,56 @@ export default {
         return {
             items: [],
             url: '/api/basket',
-            // url: 'https://raw.githubusercontent.com/Vlad777-bit/static/master/JSON/JS2-JSON/basket.json',
             isShow: false
+
         }
     },
     methods: {
         add(item) {
-            let find = this.items.find(el => el.id_product === item.id_product)
+            let find = this.items.find(el => el.id_product === item.id_product);
             if (!find) {
-                this.items.push(Object.assign({}, item, { quantity: 1 }))
+                let newItem = Object.assign({}, item, {quantity: 1});
+                this.$parent.post(this.url, newItem)
+                .then(res => {
+                    if (res.status) {
+                        this.items.push(newItem);
+                    } else {
+                        console.log('ERR_ADD_ITEM:' + newItem.product_name);
+                    }
+                })
             } else {
-                find.quantity++
+                this.$parent.put(`/api/basket/${item.id_product}`, { amount: 1 })
+                .then(res => {
+                    if (res.status) {
+                        find.quantity++;
+                    } else {
+                        console.log('ERR_ADD_ITEM:' + item.product_name);
+                    }
+                })
             }
         },
         remove(item) {
-            let find = this.items.find(el => el.id_product === item.id_product)
+            let find = this.items.find(el => el.id_product === item.id_product);
             if (find.quantity > 1) {
-                find.quantity--
+                this.$parent.put(`/api/basket/${item.id_product}`, { amount: -1 })
+                .then(res => {
+                    if (res.status) {
+                        find.quantity--;
+                    } else {
+                        console.log('ERR_REMOVE_ITEM:' + item.product_name);
+                    }
+                })
             } else {
-                this.items.splice(this.items.indexOf(find), 1)
+                this.$parent.delete(`/api/basket/${item.id_product}`)
+                .then(res => {
+                    if (res.status) {
+                        this.items.splice(this.items.indexOf(find), 1);
+                    } else {
+                        console.log('ERR_REMOVE_ITEM:' + item.product_name);
+                    }
+                })
             }
-        }
+        },
     },
     mounted() {
         this.$parent.get(this.url).then(d => this.items = d.contents)

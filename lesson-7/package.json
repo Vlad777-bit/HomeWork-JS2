@@ -32,6 +32,8 @@
     "vue": "^2.6.12"
   },
   "nodemonConfig": {
-    "ignore": ["*.json"]
+    "ignore": [
+      "*.json"
+    ]
   }
 }

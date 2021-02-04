@@ -183,3 +183,7 @@ span {
 .basket__del {
     width: 20px;
 }
+
+.center {
+    margin: 80px auto;
+}
