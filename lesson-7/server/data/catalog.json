@@ -1,0 +1,42 @@
+[
+    {
+        "id_product": 0,
+        "product_name": "Ноутбук",
+        "price": 45600
+    },
+    {
+        "id_product": 1,
+        "product_name": "Мышка",
+        "price": 1000
+    },
+    {
+        "id_product": 2,
+        "product_name": "Клавиатура",
+        "price": 1489
+    },
+    {
+        "id_product": 3,
+        "product_name": "Колонки",
+        "price": 2412
+    },
+    {
+        "id_product": 4,
+        "product_name": "WDC blue",
+        "price": 6900
+    },
+    {
+        "id_product": 5,
+        "product_name": "Сумка для ноутбука",
+        "price": 1500
+    },
+    {
+        "id_product": 6,
+        "product_name": "Салфетки для экрана",
+        "price": 876
+    },
+    {
+        "id_product": 7,
+        "product_name": "Наушники",
+        "price": 1352
+    }
+]
