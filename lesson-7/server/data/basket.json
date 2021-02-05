@@ -3,22 +3,16 @@
  "countGoods": 2,
  "contents": [
   {
-   "id_product": 1,
-   "product_name": "Мышка",
-   "price": 1000,
-   "quantity": 1
+   "id_product": 4,
+   "product_name": "WDC blue",
+   "price": 6900,
+   "quantity": 2
   },
   {
    "id_product": 3,
    "product_name": "Колонки",
    "price": 2412,
-   "quantity": 1
-  },
-  {
-   "id_product": 0,
-   "product_name": "Ноутбук",
-   "price": 45600,
-   "quantity": 1
+   "quantity": 2
   }
  ]
 }

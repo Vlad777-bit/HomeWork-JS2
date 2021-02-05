@@ -29,7 +29,6 @@ export default {
             items: [],
             url: '/api/basket',
             isShow: false
-
         }
     },
     methods: {

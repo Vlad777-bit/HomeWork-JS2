@@ -4,16 +4,13 @@ module.exports = {
         return basket
     },
     change(basket, id, amount) {
-        let find = this._search(basket.contents, id);
+        let find = basket.contents.find(item => item.id_product == id)
         find.quantity += amount
         return basket
     },
     delete(basket, id) {
-        let find = this._search(basket.contents, id)
+        let find = basket.contents.find(item => item.id_product == id)
         basket.contents.splice(basket.contents.indexOf(find), 1)
         return basket
-    },
-    _search(array, id) {
-        return array.find(item => item.id_product === id)
     }
 }

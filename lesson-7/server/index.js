@@ -1,4 +1,3 @@
-// console.log('Я вам не Димон')
 const express = require('express');
 const fs = require('fs');
 
@@ -41,7 +40,7 @@ app.post('/basket', (req, res) => {
     })
 })
 
-app.put('/basket/:id', (req, res) => {
+app.put('/basket/:id', (req, res) => { 
     fs.readFile('./server/data/basket.json', 'utf-8', (err, data) => {
         if (!err) {
             let newCart = Basket.change(JSON.parse(data), req.params.id, req.body.amount);
