@@ -1,9 +1,6 @@
 <template>
     <div>
         <header class="header">
-            <!-- <div class="form">
-                <input type="text" class="search" placeholder="Что искать?"> 
-            </div> -->
             <search v-on:search="filteredGoods"></search>
         </header>
         <main class="container">
@@ -41,6 +38,26 @@ export default {
         },
         get(url) {
             return fetch(url).then(data => data.json())
+        },
+         post(url, obj) {
+            return fetch(url, {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(obj)
+            }).then(data => data.json());
+        },
+        put(url, obj) {
+            return fetch(url, {
+                method: 'PUT',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(obj)
+            }).then(data => data.json());
+        },
+        delete(url) {
+            return fetch(url, {
+                method: 'DELETE',
+                headers: { "Content-Type": "application/json" }
+            }).then(data => data.json());
         },
         filteredGoods(search){
             this.search = search;

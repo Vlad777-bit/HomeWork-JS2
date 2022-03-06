@@ -13,7 +13,7 @@
             </button>
         </template>
 
-        <template v-else-if="itemType === 'basket'">        
+        <template v-else-if="itemType === 'basket'">    
             <div class="basket__img">
                 <img src="http://unsplash.it/180/150?random&gravity=center" alt="">
             </div>
